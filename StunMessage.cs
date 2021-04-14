@@ -6,6 +6,8 @@ namespace Stun
 {
     public class StunMessage
     {
+        // because of the big-endian/little-endian transformation it makes sense to keep a copy
+        // of some key header fields here
         private ushort type;
         private ushort length;
         private byte[] transactionID;
@@ -58,7 +60,31 @@ namespace Stun
             }
         }
 
-        // TODO: add enums to make these parameters clearer
+        private ushort ExtractShort(byte[] bytes, int offset)
+        {
+            byte[] s = new byte[2];
+            Array.Copy(bytes, offset, s, 0, 2);
+
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(s);
+            }
+
+            return BitConverter.ToUInt16(s, 0);
+        }
+
+        // Construct a message from a received byte array
+        public StunMessage(byte[] bytes)
+        {
+            // TODO: do we need to copy? or just take ownership of the bytes...
+            buffer = new byte[bytes.Length];
+            Array.Copy(bytes, buffer, bytes.Length);
+
+            // extract some often used fields
+            type = ExtractShort(buffer, 0);
+            length = ExtractShort(buffer, 2);
+        }
+
         public StunMessage(StunMethod method, StunClass cls)
         {
             ushort m = (ushort)method;

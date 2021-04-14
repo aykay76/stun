@@ -60,6 +60,16 @@ namespace Stun
             }
         }
 
+        private void AppendToBuffer(byte[] bytes)
+        {
+            byte[] newBuffer = new byte[buffer.Length + bytes.Length];
+
+            Array.Copy(buffer, 0, newBuffer, 0, buffer.Length);
+            Array.Copy(bytes, 0, newBuffer, buffer.Length, bytes.Length);
+
+            buffer = newBuffer;
+        }
+
         private ushort ExtractShort(byte[] bytes, int offset)
         {
             byte[] s = new byte[2];
@@ -119,6 +129,25 @@ namespace Stun
             //       So probably want a method AddFingerprint() which will just compute the fingerprint then add it :)
 
             attributes.Add(attribute);
+        }
+        
+        public StunMessage AddSoftware(string agent)
+        {
+            ushort length = (ushort)(agent.Length + 4);
+            if (length % 4 != 0)
+            {
+                length = (ushort)(((length / 4) + 1) * 4);
+            }
+
+            // encode the TLV
+            byte[] bytes = new byte[length];
+            StuffBuffer(BitConverter.GetBytes((ushort)0x8022), 0, bytes, 0, 2);
+            StuffBuffer(BitConverter.GetBytes(length), 0, bytes, 2, 2);
+            Array.Copy(System.Text.Encoding.UTF8.GetBytes(agent), 0, bytes, 4, agent.Length);
+
+            AppendToBuffer(bytes);
+
+            return this;
         }
 
         public StunMessage AddFingerprint()

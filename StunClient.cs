@@ -26,7 +26,8 @@ namespace Stun
 
         public async Task<int> BindingRequest()
         {
-            StunMessage m = new StunMessage(StunMethod.Binding, StunClass.Request);
+            StunMessage m = new StunMessage(StunMethod.Binding, StunClass.Request)
+                .AddSoftware(options.SoftwareAgent);
             // TODO: add some attributes
 
             UdpClient sender = new UdpClient();

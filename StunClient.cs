@@ -16,6 +16,10 @@ namespace Stun
 
         // TODO: Per 6.2.1 need to keep track of retries with exponential backoff - max 7 retries
 
+        // TODO: Per 9.2.3.1 - need to keep track of servers we have authenticated with
+        //                     first request contains no attributes, to get the REALM and NONCE back
+        //                     then we authenticate and proceed
+
         // TODO: add some methods to do basic binding request and process the response
         //       this will simplify adding attributes like SOFTWARE and USERNAME etc.
         public StunClient()

@@ -15,6 +15,60 @@ namespace Stun
 
         private byte[] buffer;
 
+        private List<StunAttributeType> availableAttributes;
+
+        public bool HasUsername()
+        {
+            return availableAttributes.Contains(StunAttributeType.USERNAME);
+        }
+
+        public bool HasMessageIntegrity()
+        {
+            return availableAttributes.Contains(StunAttributeType.MESSAGE_INTEGRITY);
+        }
+
+        public bool HasMessageIntegritySHA256()
+        {
+            return availableAttributes.Contains(StunAttributeType.MESSAGE_INTEGRITY_SHA256);
+        }
+
+        public bool HasUsername()
+        {
+            return availableAttributes.Contains(StunAttributeType.USERNAME);
+        }
+
+        public bool HasUserhash()
+        {
+            return availableAttributes.Contains(StunAttributeType.USERHASH);
+        }
+
+        public bool HasRealm()
+        {
+            return availableAttributes.Contains(StunAttributeType.REALM);
+        }
+
+        public bool HasNonce()
+        {
+            return availableAttributes.Contains(StunAttributeType.NONCE);
+        }
+
+        public bool HasAttribute(StunAttributeType attribute)
+        {
+            return availableAttributes.Contains(attribute);
+        }
+
+        public bool NonceMatchesCookie()
+        {
+            // TODO: do this
+            return true;
+        }
+
+        public bool SecurityFeaturePasswordAlgorithms()
+        {
+            // TODO: get this from nonce
+            return true;
+        }
+
         public bool IsRequest()
         {
             return (((type) & 0x0110) == 0x0000);
@@ -93,7 +147,24 @@ namespace Stun
             // extract some often used fields
             type = ExtractShort(buffer, 0);
             length = ExtractShort(buffer, 2);
+            transactionID = new byte[12];
             Array.Copy(bytes, 8, transactionID, 0, 12);
+
+            // scan through the rest of the buffer to build a list of available attributes
+            availableAttributes = new List<StunAttributeType>();
+            int pos = 20;
+            while (pos < buffer.Length)
+            {
+                StunAttributeType type = (StunAttributeType)ExtractShort(buffer, pos);
+                availableAttributes.Add(type);
+                pos += 2;
+
+                ushort length = ExtractShort(buffer, pos);
+                pos += 2 + length;
+
+                // TODO: it might just be easier to get all the values too, especially the nonce which needs some special processing
+                // when getting the nonce, check for the cookie, base64 decode the next 4 bytes and deconstruct the bit field
+            }
         }
 
         public StunMessage(StunMethod method, StunClass cls)

@@ -19,6 +19,12 @@ namespace Stun
             return this;
         }
 
+        public string GenerateNonce()
+        {
+            // TODO: need to prefix per section 9.2, add the security field
+            // then generate the rest of the nonce based on 5-tuple or something
+        }
+
         public void Start()
         {
             UdpClient client = new UdpClient(new IPEndPoint(IPAddress.Parse(options.ListenAddress), options.ListenPort));
@@ -29,16 +35,61 @@ namespace Stun
                 while (true)
                 {
                     UdpReceiveResult result = await client.ReceiveAsync();
+
+                    // TODO: store this somewhere for future reference
                     IPEndPoint remoteEndpoint = result.RemoteEndPoint;
 
                     // TODO: add some validation of magic number, 32-bit alignment etc.
                     byte[] buffer = result.Buffer;
                     StunMessage message = new StunMessage(buffer);
-                    
-                    // TODO: this is where we process the incoming message
-                    //       check whether it's a request or an indication, authentication etc. etc.
-                    //       first time we're probably going to just return a 401 error to force authentication
 
+                    // 9.2.4                    
+                    if (message.IsRequest())
+                    {
+                        if (message.HasMessageIntegrity() == false || message.HasMessageIntegritySHA256() == false)
+                        {
+                            // TODO: prepare 401 response
+                            //       MUST include a realm (need to get domain name or config option)
+                            //       MUST include a nonce (see section 9.2, MUST be prepended)
+                            //       MAY include PASSWORD_ALGORITHMS (probably just stick with SHA256 though)
+                        }
+
+                        if (mesage.HasMessageIntegrity() || message.HasMessageIntegritySHA256())
+                        {
+                            if (message.HasUsername() == false || message.HasUserhash() == false ||
+                                message.HasRealm() == false || message.HasNonce() == false)
+                            {
+                                // TODO: prepare 400 response
+                            }
+                        }
+
+                        if (message.HasNonce())
+                        {
+                            // TODO: check that the nonce starts with the nonce cookie (obsomethingjam)
+                            //       extract password bit from security field, if set:
+                            if (message.NonceMatchesCookie() && message.SecurityFeaturePasswordAlgorithms())
+                            {
+                                if (message.HasPasswordAlgorithms() == false && message.HasPasswordAlgorithm() == false)
+                                {
+                                    // TODO: set password algorithm to MD5 somewhere
+                                }
+                                else
+                                {
+                                    // TODO: do some more checks that might result in 400
+                                }
+                            }
+                        }
+
+                        // TODO: check username or userhash (against what?!) to see if they are valid - could result in a 401
+
+                        if (message.HasMessageIntegritySHA256())
+                        {
+                            // TODO: compute the hash for the message and check against what's in the message
+                            //       if they don't match return 401 MUST include REALM and NONCE
+                        }
+
+                        // TODO: proceed to check request and send a response...
+                    }
                 }
             });
 

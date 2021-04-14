@@ -5,6 +5,26 @@ using System.Text.Unicode;
 
 namespace Stun
 {
+    public enum StunAttributeType
+    {
+        MAPPED_ADDRESS = 0x0001,
+        USERNAME = 0x0006,
+        MESSAGE_INTEGRITY = 0x0008,
+        ERROR_CODE = 0x0009,
+        UNKNOWN_ATTRIBUTES = 0x000a,
+        REALM = 0x0014,
+        NONCE = 0x0015,
+        MESSAGE_INTEGRITY_SHA256 = 0x001c,
+        PASSWORD_ALGORITHM = 0x001d,
+        USERHASH = 0x001e,
+        XOR_MAPPED_ADDRESS = 0x0020,
+        PASSWORD_ALGORITHMS = 0x8002,
+        ALTERNATE_DOMAIN = 0x8003,
+        SOFTWARE = 0x8022,
+        ALTERNATE_SERVER = 0x8023,
+        FINGERPRINT = 0x8028
+    }
+
     public class StunAttribute
     {
         public ushort Type { get; set; }

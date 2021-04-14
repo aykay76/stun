@@ -53,6 +53,9 @@ namespace Stun
                 attributes = new List<StunAttribute>();
             }
 
+            // TODO: MUST handle the case for Fingerprint() being the last attribute here.
+            //       So probably want a method AddFingerprint() which will just compute the fingerprint then add it :)
+
             attributes.Add(attribute);
         }
     }

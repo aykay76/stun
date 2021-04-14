@@ -137,5 +137,17 @@ namespace Stun
             // return self for fluid style 
             return this;
         }
+
+        public byte[] GetBytes()
+        {
+            // final length is the whole message minus the 20 byte fixed header
+            length = (ushort)(buffer.Length - 20);
+
+            // stuff that into the buffer
+            StuffBuffer(BitConverter.GetBytes(length), 0, buffer, 2, 2);
+
+            // and return the buffer
+            return buffer;
+        }
     }
 }

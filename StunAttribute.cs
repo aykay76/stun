@@ -78,5 +78,30 @@ namespace Stun
 
             return attribute;
         }
+
+        public static StunAttribute Username(string username)
+        {
+            StunAttribute attribute = new StunAttribute();
+            attribute.Type = 0x0006;
+
+            // TODO: i'm sure there's some work to do here to comply with OpaqueString profile in RFC8265
+            byte[] value = System.Text.UTF8Encoding.UTF8.GetBytes(username);
+            attribute.Length = (ushort)value.Length;
+
+            // ensure value is aligned to 32-bit boundary
+            if (attribute.Length % 4 != 0)
+            {
+                attribute.Length = (ushort)(((attribute.Length / 4) + 1) * 4);
+            }
+
+            // allocate
+            attribute.Value = new byte[attribute.Length];
+
+            // copy 
+            Array.Copy(value, attribute.Value, value.Length);
+
+            // return
+            return attribute;
+        }
     }
 }

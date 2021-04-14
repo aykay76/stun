@@ -179,5 +179,9 @@ namespace Stun
             // and return the buffer
             return buffer;
         }
+
+        // TODO: add methods to investigate attributes and know what's available (and extract the values)
+        //       maybe an initial scan when constructing the message to see which attributes are available
+        //       Check section 9.2.4
     }
 }

@@ -45,7 +45,10 @@ namespace Stun
             byte[] datagram = m.GetBytes();
             int t = await sender.SendAsync(datagram, datagram.Length, new IPEndPoint(IPAddress.Parse(options.ServerAddress), options.ServerPort));
 
-            // TODO: process the response
+            // TODO: process the response - if we get 401 error we need to follow section 9.2.5
+            
+            // TODO: move this to a general loop that will process incoming datagrams and 
+            //       check association with servers etc. to know state of authentication against different servers
 
             return t;
         }

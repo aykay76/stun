@@ -4,5 +4,6 @@ namespace Stun
     {
         public string ListenAddress { get; set; }
         public int ListenPort { get; set; }
+        public string Realm { get; set; }
     }
 }

@@ -10,6 +10,7 @@ namespace Stun
         private StunServerOptions options;
 
         // TODO: add some form of transaction ID list to keep track of uniqueness across messages
+        // TODO: server MUST support TCP and UDP - so add TCP listener
 
         public StunServer Configure(StunServerOptions options)
         {

@@ -43,7 +43,17 @@ namespace Stun
         public StunMessage(ushort method, ushort cls)
         {
             type = (ushort)((method & 0x1F80) << 2 | (method & 0x0070) << 1 | (method & 0x000F) | (cls & 0x0002) << 7 | (cls & 0x0001) << 4);
-            attributes = new List<StunAttribute>();
+            
+        }
+
+        public void AddAttribute(StunAttribute attribute)
+        {
+            if (attributes == null)
+            {
+                attributes = new List<StunAttribute>();
+            }
+
+            attributes.Add(attribute);
         }
     }
 }

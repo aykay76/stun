@@ -9,6 +9,8 @@ namespace Stun
     {
         private StunServerOptions options;
 
+        // TODO: add some form of transaction ID list to keep track of uniqueness across messages
+
         public StunServer Configure(StunServerOptions options)
         {
             this.options = options;

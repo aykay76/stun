@@ -93,6 +93,7 @@ namespace Stun
             // extract some often used fields
             type = ExtractShort(buffer, 0);
             length = ExtractShort(buffer, 2);
+            Array.Copy(bytes, 8, transactionID, 0, 12);
         }
 
         public StunMessage(StunMethod method, StunClass cls)

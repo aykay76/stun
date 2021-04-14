@@ -11,6 +11,11 @@ namespace Stun
 
         // TODO: need to keep track of transaction IDs used, and probably other stuff :)
 
+        // TODO: Per 6.2 of the RFC should limit self to 10 outstanding transactions with a server
+        // so keep track of what is in progress with each server
+
+        // TODO: Per 6.2.1 need to keep track of retries with exponential backoff - max 7 retries
+
         // TODO: add some methods to do basic binding request and process the response
         //       this will simplify adding attributes like SOFTWARE and USERNAME etc.
         public StunClient()

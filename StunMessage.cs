@@ -76,12 +76,12 @@ namespace Stun
 
         public bool SecurityFeaturePasswordAlgorithms()
         {
-            return (securityFeatureSet[2] & 0x01);
+            return (securityFeatureSet[2] & 0x01) == 0x01;
         }
 
         public bool SecurityFeatureUsernameAnonymity()
         {
-            return (securityFeatureSet[2] & 0x02);
+            return (securityFeatureSet[2] & 0x02) == 0x02;
         }
 
         public bool IsRequest()
@@ -233,19 +233,79 @@ namespace Stun
         
         public StunMessage AddSoftware(string agent)
         {
-            ushort length = (ushort)(agent.Length + 4);
+            ushort length = (ushort)(agent.Length);
             if (length % 4 != 0)
             {
                 length = (ushort)(((length / 4) + 1) * 4);
             }
 
             // encode the TLV
-            byte[] bytes = new byte[length];
+            byte[] bytes = new byte[length + 4];
             StuffBuffer(BitConverter.GetBytes((ushort)0x8022), 0, bytes, 0, 2);
             StuffBuffer(BitConverter.GetBytes(length), 0, bytes, 2, 2);
             Array.Copy(System.Text.Encoding.UTF8.GetBytes(agent), 0, bytes, 4, agent.Length);
 
             AppendToBuffer(bytes);
+
+            return this;
+        }
+
+        public StunMessage AddRealm(string realm)
+        {
+            ushort length = (ushort)(realm.Length);
+            if (length % 4 != 0)
+            {
+                length = (ushort)(((length / 4) + 1) * 4);
+            }
+
+            // encode the TLV, allocate L + 4 bytes for T&L
+            byte[] bytes = new byte[length + 4];
+            StuffBuffer(BitConverter.GetBytes((ushort)0x0014), 0, bytes, 0, 2);
+            StuffBuffer(BitConverter.GetBytes(length), 0, bytes, 2, 2);
+            Array.Copy(System.Text.Encoding.UTF8.GetBytes(realm), 0, bytes, 4, realm.Length);
+
+            AppendToBuffer(bytes);
+
+            return this;
+        }
+
+        public StunMessage AddErrorCode(int errorCode, string reason)
+        {
+            if (errorCode < 300 || errorCode > 699)
+            {
+                throw new InvalidOperationException("Error code must be between 300 and 699");
+            }
+
+            if (reason.Length >= 128)
+            {
+                throw new InvalidOperationException("Reason phrase must be fewer than 128 characters");
+            }
+
+            // align length to 32-bit boundary
+            ushort length = (ushort)(reason.Length);
+            if (length % 4 != 0)
+            {
+                length = (ushort)(((length / 4) + 1) * 4);
+            }
+
+            byte[] value = new byte[length + 4];
+
+            value[0] = 0;
+            value[1] = 0;
+            value[3] = (byte)(errorCode / 100);
+            value[4] = (byte)(errorCode % 100);
+
+            // type
+            StuffBuffer(BitConverter.GetBytes((ushort)0x0009), 0, value, 0, 2);
+
+            // length
+            StuffBuffer(BitConverter.GetBytes(length - 4), 0, value, 2, 2);
+
+            // value
+            byte[] reasonBytes = System.Text.Encoding.UTF8.GetBytes(reason);
+            Array.Copy(reasonBytes, 0, value, 4, reasonBytes.Length);
+
+            AppendToBuffer(value);
 
             return this;
         }

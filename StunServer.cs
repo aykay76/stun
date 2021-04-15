@@ -57,9 +57,13 @@ namespace Stun
                         if (message.HasMessageIntegrity() == false || message.HasMessageIntegritySHA256() == false)
                         {
                             // TODO: prepare 401 response
-                            //       MUST include a realm (need to get domain name or config option)
                             //       MUST include a nonce (see section 9.2, MUST be prepended)
                             //       MAY include PASSWORD_ALGORITHMS (probably just stick with SHA256 though)
+                            StunMessage response = new StunMessage((StunMethod)message.Method(), StunClass.Error)
+                                .AddErrorCode(401, "Not authenticated.")
+                                .AddRealm(options.Realm);
+                            
+                            // TODO: send the response over the same transport as the message was received on
                         }
 
                         if (message.HasMessageIntegrity() || message.HasMessageIntegritySHA256())
@@ -73,8 +77,6 @@ namespace Stun
 
                         if (message.HasNonce())
                         {
-                            // TODO: check that the nonce starts with the nonce cookie (obsomethingjam)
-                            //       extract password bit from security field, if set:
                             if (message.NonceMatchesCookie() && message.SecurityFeaturePasswordAlgorithms())
                             {
                                 if (message.HasPasswordAlgorithms() == false && message.HasPasswordAlgorithm() == false)

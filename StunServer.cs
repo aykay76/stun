@@ -1,4 +1,5 @@
 using System;
+using System.Buffers.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -21,8 +22,15 @@ namespace Stun
 
         public string GenerateNonce()
         {
+            string nonce = "obMatJos2";
+
             // TODO: need to prefix per section 9.2, add the security field
             // then generate the rest of the nonce based on 5-tuple or something
+
+            byte[] securityFeatureSet = new byte[3];
+            nonce += Convert.ToBase64String(securityFeatureSet);
+
+            return nonce;
         }
 
         public void Start()

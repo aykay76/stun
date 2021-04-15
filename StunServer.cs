@@ -62,7 +62,7 @@ namespace Stun
                             //       MAY include PASSWORD_ALGORITHMS (probably just stick with SHA256 though)
                         }
 
-                        if (mesage.HasMessageIntegrity() || message.HasMessageIntegritySHA256())
+                        if (message.HasMessageIntegrity() || message.HasMessageIntegritySHA256())
                         {
                             if (message.HasUsername() == false || message.HasUserhash() == false ||
                                 message.HasRealm() == false || message.HasNonce() == false)

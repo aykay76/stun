@@ -32,11 +32,6 @@ namespace Stun
             return availableAttributes.Contains(StunAttributeType.MESSAGE_INTEGRITY_SHA256);
         }
 
-        public bool HasUsername()
-        {
-            return availableAttributes.Contains(StunAttributeType.USERNAME);
-        }
-
         public bool HasUserhash()
         {
             return availableAttributes.Contains(StunAttributeType.USERHASH);
@@ -50,6 +45,16 @@ namespace Stun
         public bool HasNonce()
         {
             return availableAttributes.Contains(StunAttributeType.NONCE);
+        }
+
+        public bool HasPasswordAlgorithms()
+        {
+            return availableAttributes.Contains(StunAttributeType.PASSWORD_ALGORITHMS);
+        }
+
+        public bool HasPasswordAlgorithm()
+        {
+            return availableAttributes.Contains(StunAttributeType.PASSWORD_ALGORITHM);
         }
 
         public bool HasAttribute(StunAttributeType attribute)

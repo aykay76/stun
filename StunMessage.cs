@@ -11,7 +11,12 @@ namespace Stun
         private ushort type;
         private ushort length;
         private byte[] transactionID;
+        
+        // TODO: should remove this when apt
         private List<StunAttribute> attributes;
+
+        private string nonce;
+        private byte[] securityFeatureSet;
 
         private byte[] buffer;
 
@@ -64,14 +69,19 @@ namespace Stun
 
         public bool NonceMatchesCookie()
         {
-            // TODO: do this
-            return true;
+            if (nonce.StartsWith("obMatJos2")) return true;
+
+            return false;
         }
 
         public bool SecurityFeaturePasswordAlgorithms()
         {
-            // TODO: get this from nonce
-            return true;
+            return (securityFeatureSet[2] & 0x01);
+        }
+
+        public bool SecurityFeatureUsernameAnonymity()
+        {
+            return (securityFeatureSet[2] & 0x02);
         }
 
         public bool IsRequest()
@@ -165,10 +175,23 @@ namespace Stun
                 pos += 2;
 
                 ushort length = ExtractShort(buffer, pos);
-                pos += 2 + length;
+                pos += 2;
 
                 // TODO: it might just be easier to get all the values too, especially the nonce which needs some special processing
                 // when getting the nonce, check for the cookie, base64 decode the next 4 bytes and deconstruct the bit field
+                if (type == StunAttributeType.NONCE)
+                {
+                    byte[] value = new byte[length];
+                    Array.Copy(buffer, pos, value, 0, length);
+                    nonce = System.Text.Encoding.UTF8.GetString(value);
+
+                    if (NonceMatchesCookie())
+                    {
+                        securityFeatureSet = Convert.FromBase64String(nonce.Substring(9, 4));
+                    }
+                }
+
+                pos += length;
             }
         }
 

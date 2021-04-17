@@ -45,10 +45,33 @@ namespace Stun
             byte[] datagram = m.GetBytes();
             int t = await sender.SendAsync(datagram, datagram.Length, new IPEndPoint(IPAddress.Parse(options.ServerAddress), options.ServerPort));
 
-            // TODO: process the response - if we get 401 error we need to follow section 9.2.5
-            
             // TODO: move this to a general loop that will process incoming datagrams and 
             //       check association with servers etc. to know state of authentication against different servers
+            UdpReceiveResult result = await client.ReceiveAsync();
+            byte[] buffer = result.Buffer;
+            StunMessage message = new StunMessage(buffer);
+
+            if (message.IsSuccessResponse())
+            {
+                // TODO: check for XOR_MAPPED_ADDRESS attribute
+            }
+            else if (message.IsErrorResponse())
+            {
+                if (message.ErrorCode >= 300 && message.ErrorCode < 400)
+                {
+                    // TODO: check for ALTERNATE_SERVER attribute
+                }
+                else if (message.ErrorCode >= 400 && message.ErrorCode < 500)
+                {
+                    // TODO: check 401 otherwise it's probably a fail
+                    // TODO: if 420 look for UNKNOWN_ATTRIBUTES and report
+                }
+                else if (message.ErrorCode >= 500 && message.ErrorCode < 600)
+                {
+                    // TODO: implement retry mechanism
+                }
+            }
+            
 
             return t;
         }

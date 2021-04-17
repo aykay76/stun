@@ -12,6 +12,7 @@ namespace Stun
         private ushort length;
         private byte[] transactionID;
         
+        
         // TODO: should remove this when apt
         private List<StunAttribute> attributes;
 
@@ -21,6 +22,8 @@ namespace Stun
         private byte[] buffer;
 
         private List<StunAttributeType> availableAttributes;
+
+        public int ErrorCode { get; }
 
         public bool HasUsername()
         {
@@ -189,6 +192,10 @@ namespace Stun
                     {
                         securityFeatureSet = Convert.FromBase64String(nonce.Substring(9, 4));
                     }
+                }
+                else if (type == StunAttributeType.ERROR_CODE)
+                {
+                    // TODO: deserialize the error code and reason
                 }
 
                 pos += length;

@@ -39,6 +39,7 @@ namespace Stun
 
         public void Start()
         {
+            // TODO: add a TcpClient for handling incoming requests over TCP
             UdpClient client = new UdpClient(new IPEndPoint(IPAddress.Parse(options.ListenAddress), options.ListenPort));
 
             // TODO: this is taken from an console app I used for UDP testing, refactor
@@ -55,6 +56,7 @@ namespace Stun
                     byte[] buffer = result.Buffer;
                     StunMessage message = new StunMessage(buffer);
 
+                    // TODO: Move this to another method to avoid one big 
                     // 9.2.4                    
                     if (message.IsRequest())
                     {
@@ -103,6 +105,12 @@ namespace Stun
                         }
 
                         // TODO: proceed to check request and send a response...
+                    }
+                    else if (message.IsIndication())
+                    {
+                        // See section 6.3.2
+                        // Since the only method supported is Binding and there is no further processing
+                        // there is nothing to do here other than refresh the binding
                     }
                 }
             });

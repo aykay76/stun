@@ -47,7 +47,7 @@ namespace Stun
 
             // TODO: move this to a general loop that will process incoming datagrams and 
             //       check association with servers etc. to know state of authentication against different servers
-            UdpReceiveResult result = await client.ReceiveAsync();
+            UdpReceiveResult result = await sender.ReceiveAsync();
             byte[] buffer = result.Buffer;
             StunMessage message = new StunMessage(buffer);
 

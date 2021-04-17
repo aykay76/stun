@@ -197,7 +197,7 @@ namespace Stun
                 else if (type == StunAttributeType.ERROR_CODE)
                 {
                     ErrorCode = buffer[pos + 2] * 100 + buffer[pos + 3];
-                    ErrorReason = System.Text.Encoding.UTF8.GetString(buffer[pos+4]);
+                    ErrorReason = System.Text.Encoding.UTF8.GetString(buffer, 4, length - 4);
                 }
 
                 pos += length;

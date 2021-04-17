@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace Stun
 {
     public class StunSession

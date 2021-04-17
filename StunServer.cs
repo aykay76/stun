@@ -56,7 +56,8 @@ namespace Stun
                     byte[] buffer = result.Buffer;
                     StunMessage message = new StunMessage(buffer);
 
-                    // TODO: Move this to another method to avoid one big 
+                    // TODO: Move this to another method to avoid one big method
+                    // TODO: check section 9.1.3 for additional authn checks
                     // 9.2.4                    
                     if (message.IsRequest())
                     {

@@ -51,6 +51,8 @@ namespace Stun
             byte[] buffer = result.Buffer;
             StunMessage message = new StunMessage(buffer);
 
+            // TODO: see section 9.1.4 for more checks related to authn
+
             if (message.IsSuccessResponse())
             {
                 // TODO: check for XOR_MAPPED_ADDRESS attribute
@@ -63,7 +65,7 @@ namespace Stun
                 }
                 else if (message.ErrorCode >= 400 && message.ErrorCode < 500)
                 {
-                    // TODO: check 401 otherwise it's probably a fail
+                    // TODO: Section 9.2.5 - check 401 otherwise it's probably a fail
                     // TODO: if 420 look for UNKNOWN_ATTRIBUTES and report
                 }
                 else if (message.ErrorCode >= 500 && message.ErrorCode < 600)

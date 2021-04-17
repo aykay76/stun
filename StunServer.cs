@@ -13,6 +13,10 @@ namespace Stun
         // TODO: add some form of transaction ID list to keep track of uniqueness across messages
         // TODO: server MUST support TCP and UDP - so add TCP listener
         // TODO: need to keep track of known clients and their state
+
+        // keep track of sessions on server
+        // TODO: prolly change this to a dictionary
+        List<StunSession> sessions;
         
         public StunServer Configure(StunServerOptions options)
         {

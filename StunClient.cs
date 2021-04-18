@@ -20,8 +20,6 @@ namespace Stun
         //                     first request contains no attributes, to get the REALM and NONCE back
         //                     then we authenticate and proceed
 
-        // TODO: add some methods to do basic binding request and process the response
-        //       this will simplify adding attributes like SOFTWARE and USERNAME etc.
         public StunClient()
         {
 

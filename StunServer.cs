@@ -40,15 +40,23 @@ namespace Stun
 
         public void Start()
         {
-            // TODO: add a TcpClient for handling incoming requests over TCP
-            UdpClient client = new UdpClient(new IPEndPoint(IPAddress.Parse(options.ListenAddress), options.ListenPort));
+            TcpListener tcpServer = new TcpListener(IPAddress.Parse(options.ListenAddress), options.TcpPort);
+            UdpClient udpClient = new UdpClient(new IPEndPoint(IPAddress.Parse(options.ListenAddress), options.UdpPort));
+            Task<UdpReceiveResult> udpReceiveTask = null;
+            Task<TcpClient> tcpAcceptTask = null;
 
             // TODO: this is taken from an console app I used for UDP testing, refactor
             Task t = Task.Run(async () =>
             {
                 while (true)
                 {
-                    UdpReceiveResult result = await client.ReceiveAsync();
+                    // TODO: need to add logic to manage tasks for when UDP and/or TCP requests come in
+                    // if the tasks are not already outstanding (i.e. awaiting from a previous loop) then
+                    // add, otherwise just check for completion
+
+                    Task<UdpReceiveResult> udpReceiveTask = udpClient.ReceiveAsync();
+                    UdpReceiveResult result = await udpClient.ReceiveAsync();
+                    Task<TcpClient> tcpAcceptTask = tcpServer.AcceptTcpClientAsync();
 
                     // TODO: store this somewhere for future reference
                     IPEndPoint remoteEndpoint = result.RemoteEndPoint;

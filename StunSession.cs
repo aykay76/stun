@@ -11,5 +11,10 @@ namespace Stun
         IPEndPoint sourceEndpoint;
 
         // TODO: use this for client and server to track session information
+
+        public StunSession()
+        {
+            transactionId = new byte[12];
+        }
     }
 }

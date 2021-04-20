@@ -17,7 +17,7 @@ namespace Stun
 
         // keep track of sessions on server
         // TODO: prolly change this to a dictionary
-        List<StunSession> sessions;
+        private List<StunSession> sessions = new List<StunSession>();
         
         public StunServer Configure(StunServerOptions options)
         {
@@ -104,10 +104,11 @@ namespace Stun
             TcpListener tcpServer = new TcpListener(IPAddress.Parse(options.ListenAddress), options.TcpPort);
             UdpClient udpClient = new UdpClient(new IPEndPoint(IPAddress.Parse(options.ListenAddress), options.UdpPort));
             Task[] tasks = new Task[2]; // UDP receive, TCP accept
+            List<Task> tcpReceiveTasks = new List<Task>();
 
             // TODO: this is taken from an console app I used for UDP testing, refactor
-            Task t = Task.Run(async () =>
-            {
+            // Task t = Task.Run(async () =>
+            // {
                 while (true)
                 {
                     // TODO: need to add logic to manage tasks for when UDP and/or TCP requests come in
@@ -122,14 +123,18 @@ namespace Stun
 
                     if (tasks[1] == null)
                     {
-                        tasks[2] = tcpServer.AcceptTcpClientAsync();
+                        tasks[2] = tcpServer.AcceptSocketAsync();
                     }
 
+                    // check for any new connections
                     int task = Task.WaitAny(tasks, 5);
                     if (task == 0)
                     {
                         // UDP client sent a request
                         UdpReceiveResult result = ((Task<UdpReceiveResult>)tasks[0]).Result;
+
+                        // done with the task so null it ready for next loop iteration
+                        tasks[0] = null;
 
                         // TODO: store this somewhere for future reference
                         IPEndPoint remoteEndpoint = result.RemoteEndPoint;
@@ -140,13 +145,32 @@ namespace Stun
                     }
                     else if (task == 1)
                     {
-                        TcpClient tcpClient = ((Task<TcpClient>)tasks[1]).Result;
+                        // TODO: move socket and buffer to object to track connections - probably need some form of state enum too (Connected, Receiving, Pending, Sending blah blah blah)
+                        Socket socket = ((Task<Socket>)tasks[1]).Result;
+
+                        // done with the task so null it ready for next loop iteration
+                        tasks[1] = null;
+
+                        byte[] buffer = new byte[500];
+
+                        // add task to receive TCP packet
+                        tcpReceiveTasks.Add(socket.ReceiveAsync(buffer, SocketFlags.None));
+                    }
+
+                    // check for any messages on TCP connections
+                    task = Task.WaitAny(tcpReceiveTasks.ToArray());
+                    if (task != -1)
+                    {
+                        // TODO: process the incoming data
+                        //       check length is at least 4 bytes to get the length, then check length against buffer
+                        //       if we have a full message process it otherwise receive again
+                        //       when we have a full message remove the socket from the list so that it doesn't get checked next time around
                     }
                 }
-            });
+            // });
 
-            Console.WriteLine("Press any key to quit it");
-            Console.ReadKey();
+            // Console.WriteLine("Press any key to quit it");
+            // Console.ReadKey();
         }
     }
 }

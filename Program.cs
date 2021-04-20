@@ -19,7 +19,8 @@ namespace Stun
             new StunServer()
                 .Configure(new StunServerOptions {
                     ListenAddress = "0.0.0.0",
-                    ListenPort = 3478
+                    UdpPort = 3478,
+                    TcpPort = 3478
                 })
                 .Start();
         }

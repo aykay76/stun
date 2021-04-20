@@ -196,6 +196,7 @@ namespace Stun
                         StunMessage message = new StunMessage(session.SocketBuffer);
 
                         // TODO: work out how to process message :)
+                        // we're now on a secondary thread in a static method, with no access to the "server"
                     }
                     else
                     {

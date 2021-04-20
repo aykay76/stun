@@ -177,7 +177,31 @@ namespace Stun
             if (read > 0)
             {
                 session.Position += read;
-                session.TcpSocket.BeginReceive(session.SocketBuffer, session.Position, session.SocketBuffer.Length - session.Position, SocketFlags.None, new AsyncCallback(Receive_Callback), session);
+
+                // if we have at least 4 bytes we can check the length
+                if (session.Position > 3)
+                {
+                    // extract length and compare with buffer position, we may have a full message
+                    byte[] lengthBytes = new byte[2];
+                    Array.Copy(session.SocketBuffer, 2, lengthBytes, 0, 2);
+
+                    if (BitConverter.IsLittleEndian)
+                    {
+                        Array.Reverse(lengthBytes);
+                    }
+
+                    ushort length = BitConverter.ToUInt16(lengthBytes, 0);
+                    if (length + 20 == session.Position)
+                    {
+                        StunMessage message = new StunMessage(session.SocketBuffer);
+
+                        // TODO: work out how to process message :)
+                    }
+                    else
+                    {
+                        session.TcpSocket.BeginReceive(session.SocketBuffer, session.Position, session.SocketBuffer.Length - session.Position, SocketFlags.None, new AsyncCallback(Receive_Callback), session);
+                    }
+                }
             }
             else
             {

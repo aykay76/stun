@@ -1,20 +1,27 @@
 using System.Net;
+using System.Net.Sockets;
 
 namespace Stun
 {
     public class StunSession
     {
         // the 96-bit transaction id for the session
-        byte[] transactionId;
+        public byte[] TransactionId { get; set; }
 
         // reflexive transport address of the client
-        IPEndPoint sourceEndpoint;
+        public IPEndPoint ClientEndpoint { get; set; }
 
-        // TODO: use this for client and server to track session information
+        public Socket TcpSocket { get; set; }
+
+        public byte[] SocketBuffer { get; set; }
+        public byte[] MessageBuffer { get; set; }
+        public int Position { get; set; }
 
         public StunSession()
         {
-            transactionId = new byte[12];
+            TransactionId = new byte[12];
+            SocketBuffer = new byte[500];
+            Position = 0;
         }
     }
 }

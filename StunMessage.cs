@@ -327,13 +327,24 @@ namespace Stun
             StunAttribute fingerprint = new StunAttribute();
             fingerprint.Type = 0x8028;
 
-            // TODO: dig out CRC32 code
+            byte[] value = new byte[8];
+
+            // Type
+            StuffBuffer(BitConverter.GetBytes((ushort)0x0009), 0, value, 0, 2);
+
+            // Length
+            StuffBuffer(BitConverter.GetBytes(4), 0, value, 2, 2);
+
+            // Value
             //       munge message to remove fingerprint attribute
             //       CRC32 and ^ with 0x5354554e
             //       see section 14.7
+            CRC32 crc = new CRC32();
+            uint checksum = crc.DoCRC32(buffer);
+            checksum ^= 0x5354554e;
+            StuffBuffer(BitConverter.GetBytes(checksum), 0, value, 4, 0);
 
-            // this must be the final attribute, so could return a different type?
-            attributes.Add(fingerprint);
+            AppendToBuffer(value);
 
             // return self for fluid style 
             return this;

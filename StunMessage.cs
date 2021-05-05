@@ -118,6 +118,7 @@ namespace Stun
             return (ushort)((type & 0x0100) >> 7 | (type & 0x0010) >> 4);
         }
 
+        // whack some bytes into the buffer based on the endianness of the platform this is running on
         private void StuffBuffer(byte[] bytes, int sourceOffset, byte[] destination, int offset, int count)
         {
             if (BitConverter.IsLittleEndian)
@@ -133,6 +134,7 @@ namespace Stun
             }
         }
 
+        // append some bytes to the buffer, reallocating and resizing as appropriate
         private void AppendToBuffer(byte[] bytes)
         {
             byte[] newBuffer = new byte[buffer.Length + bytes.Length];
@@ -143,6 +145,7 @@ namespace Stun
             buffer = newBuffer;
         }
 
+        // grab an unsigned short from the buffer based on endianness
         private ushort ExtractShort(byte[] bytes, int offset)
         {
             byte[] s = new byte[2];
@@ -159,7 +162,7 @@ namespace Stun
         // Construct a message from a received byte array
         public StunMessage(byte[] bytes)
         {
-            // TODO: do we need to copy? or just take ownership of the bytes...
+            // take a copy of the bytes as we can't assume that ownership is transferred
             buffer = new byte[bytes.Length];
             Array.Copy(bytes, buffer, bytes.Length);
 

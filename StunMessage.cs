@@ -230,19 +230,6 @@ namespace Stun
             csp.GetBytes(buffer, 8, 12);
         }
 
-        public void AddAttribute(StunAttribute attribute)
-        {
-            if (attributes == null)
-            {
-                attributes = new List<StunAttribute>();
-            }
-
-            // TODO: MUST handle the case for Fingerprint() being the last attribute here.
-            //       So probably want a method AddFingerprint() which will just compute the fingerprint then add it :)
-
-            attributes.Add(attribute);
-        }
-        
         public StunMessage AddSoftware(string agent)
         {
             ushort length = (ushort)(agent.Length);

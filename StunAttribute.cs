@@ -170,20 +170,6 @@ namespace Stun
             return attribute;
         }
 
-        public static StunAttribute Fingerprint()
-        {
-            StunAttribute attribute = new StunAttribute();
-            attribute.Type = 0x8028;
-
-            // TODO: dig out CRC32 code
-            //       munge message to remove fingerprint attribute
-            //       CRC32 and ^ with 0x5354554e
-            //       see section 14.7
-
-            // return
-            return attribute;
-        }
-
         public static StunAttribute ErrorCode(int errorCode, string reason)
         {
             StunAttribute attribute = new StunAttribute();
